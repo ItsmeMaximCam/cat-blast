@@ -126,9 +126,103 @@ function spawnPreviewBlock() {
     tile.appendChild(img);
     blockEl.appendChild(tile);
   });
+  activeBlock = {
+  shape,
+  catType,
+  faceIndex,
+  element: blockEl
+};
+blockEl.style.cursor = "grab";
+
+blockEl.addEventListener("pointerdown", (e) => {
+  isDragging = true;
+  blockEl.setPointerCapture(e.pointerId);
+
+  const rect = blockEl.getBoundingClientRect();
+  dragOffset.x = e.clientX - rect.left;
+  dragOffset.y = e.clientY - rect.top;
+
+  blockEl.style.position = "absolute";
+  blockEl.style.zIndex = 1000;
+  blockEl.style.pointerEvents = "none";
+});
 
   blocksContainer.appendChild(blockEl);
 }
+
+let activeBlock = null;
+let isDragging = false;
+let dragOffset = { x: 0, y: 0 };
+
+
+document.addEventListener("pointermove", (e) => {
+  if (!isDragging || !activeBlock) return;
+
+  activeBlock.element.style.left = e.clientX - dragOffset.x + "px";
+  activeBlock.element.style.top = e.clientY - dragOffset.y + "px";
+
+  previewPlacement(e.clientX, e.clientY);
+});
+
+document.addEventListener("pointerup", () => {
+  if (!isDragging) return;
+
+  clearPreview();
+  isDragging = false;
+
+  // placement logic comes next step
+});
+
+function clearPreview() {
+  document.querySelectorAll(".cell").forEach(cell => {
+    cell.classList.remove("preview-valid", "preview-invalid");
+  });
+}
+
+function previewPlacement(mouseX, mouseY) {
+  clearPreview();
+
+  const gridRect = gridElement.getBoundingClientRect();
+
+  if (
+    mouseX < gridRect.left ||
+    mouseX > gridRect.right ||
+    mouseY < gridRect.top ||
+    mouseY > gridRect.bottom
+  ) return;
+
+  const cellSize = gridRect.width / GRID_SIZE;
+
+  const baseCol = Math.floor((mouseX - gridRect.left) / cellSize);
+  const baseRow = Math.floor((mouseY - gridRect.top) / cellSize);
+
+  let valid = true;
+  const targetCells = [];
+
+  activeBlock.shape.forEach(([dx, dy]) => {
+    const row = baseRow + dy;
+    const col = baseCol + dx;
+
+    if (
+      row < 0 ||
+      row >= GRID_SIZE ||
+      col < 0 ||
+      col >= GRID_SIZE ||
+      grid[row][col] !== null
+    ) {
+      valid = false;
+    } else {
+      targetCells.push({ row, col });
+    }
+  });
+
+  targetCells.forEach(({ row, col }) => {
+    const index = row * GRID_SIZE + col;
+    const cell = gridElement.children[index];
+    cell.classList.add(valid ? "preview-valid" : "preview-invalid");
+  });
+}
+
 
 // TEMP: spawn one block on load
 spawnPreviewBlock();

@@ -72,5 +72,14 @@ h1 {
   height: 100%;
 }
 
+.cell.preview-valid {
+  background: #c8f7c5;
+}
+
+.cell.preview-invalid {
+  background: #f7c5c5;
+}
+
+
 
 
