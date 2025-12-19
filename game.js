@@ -11,6 +11,8 @@ let lastPreview = {
   cells: []
 };
 
+let activePointerId = null;
+
 const BLOCK_PRESETS = [
   // Single
   [[0, 0]],
@@ -141,7 +143,9 @@ blockEl.style.cursor = "grab";
 
 blockEl.addEventListener("pointerdown", (e) => {
   isDragging = true;
-  blockEl.setPointerCapture(e.pointerId);
+  activePointerId = e.pointerId;
+
+  blockEl.setPointerCapture(activePointerId);
 
   const rect = blockEl.getBoundingClientRect();
   dragOffset.x = rect.width / 2;
@@ -151,6 +155,8 @@ blockEl.addEventListener("pointerdown", (e) => {
   blockEl.style.zIndex = 1000;
   blockEl.style.cursor = "grabbing";
 });
+
+
 
   blocksContainer.appendChild(blockEl);
 }
@@ -169,10 +175,12 @@ document.addEventListener("pointermove", (e) => {
   previewPlacement(e.clientX, e.clientY);
 });
 
-document.addEventListener("pointerup", (e) => {
+document.addEventListener("pointerup", () => {
   if (!isDragging || !activeBlock) return;
 
-  activeBlock.element.releasePointerCapture(e.pointerId);
+  try {
+    activeBlock.element.releasePointerCapture(activePointerId);
+  } catch (_) {}
 
   if (lastPreview.valid) {
     placeActiveBlock();
@@ -180,13 +188,20 @@ document.addEventListener("pointerup", (e) => {
 
   clearPreview();
   isDragging = false;
+  activePointerId = null;
 });
+
 
 function placeActiveBlock() {
   const { shape, catType, faceIndex } = activeBlock;
 
-  lastPreview.cells.forEach((pos, i) => {
-    const isFace = i === faceIndex;
+  lastPreview.cells.forEach((pos) => {
+  const shapeIndex = activeBlock.shape.findIndex(
+    ([dx, dy]) =>
+      pos.row === baseRow + dy && pos.col === baseCol + dx
+  );
+
+  const isFace = shapeIndex === faceIndex;
 
     grid[pos.row][pos.col] = {
       catType,
