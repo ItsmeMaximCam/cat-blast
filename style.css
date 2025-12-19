@@ -1,0 +1,40 @@
+* {
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 16px;
+  background: #f7f7f7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  margin-bottom: 8px;
+}
+
+#hud {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+#grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  width: min(90vw, 360px);
+  height: min(90vw, 360px);
+  background: #ddd;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.cell {
+  background: white;
+  border-radius: 4px;
+}
