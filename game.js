@@ -175,11 +175,11 @@ document.addEventListener("pointermove", (e) => {
   previewPlacement(e.clientX, e.clientY);
 });
 
-document.addEventListener("pointerup", () => {
-  if (!isDragging || !activeBlock) return;
+blockEl.addEventListener("pointerup", () => {
+  if (!isDragging) return;
 
   try {
-    activeBlock.element.releasePointerCapture(activePointerId);
+    blockEl.releasePointerCapture(activePointerId);
   } catch (_) {}
 
   if (lastPreview.valid) {
@@ -189,7 +189,10 @@ document.addEventListener("pointerup", () => {
   clearPreview();
   isDragging = false;
   activePointerId = null;
+
+  blockEl.style.cursor = "grab";
 });
+
 
 
 function placeActiveBlock() {
