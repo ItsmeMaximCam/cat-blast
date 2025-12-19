@@ -19,3 +19,32 @@ for (let row = 0; row < GRID_SIZE; row++) {
     gridElement.appendChild(cell);
   }
 }
+
+function renderTile(row, col, tile) {
+  const index = row * GRID_SIZE + col;
+  const cell = gridElement.children[index];
+
+  // Clear previous content
+  cell.innerHTML = "";
+
+  if (!tile) return;
+
+  const img = document.createElement("img");
+
+  const basePath = "assets/cats/";
+  if (tile.isFace) {
+    img.src = `${basePath}${tile.catType}_face.png`;
+  } else {
+    img.src = `${basePath}${tile.catType}_body.png`;
+  }
+
+  cell.appendChild(img);
+}
+
+
+// TEMP TEST TILE
+grid[3][3] = { catType: "orange", isFace: true };
+grid[3][4] = { catType: "orange", isFace: false };
+
+renderTile(3, 3, grid[3][3]);
+renderTile(3, 4, grid[3][4]);
