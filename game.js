@@ -139,12 +139,12 @@ blockEl.addEventListener("pointerdown", (e) => {
   blockEl.setPointerCapture(e.pointerId);
 
   const rect = blockEl.getBoundingClientRect();
-  dragOffset.x = e.clientX - rect.left;
-  dragOffset.y = e.clientY - rect.top;
+  dragOffset.x = rect.width / 2;
+  dragOffset.y = rect.height / 2;
 
   blockEl.style.position = "absolute";
   blockEl.style.zIndex = 1000;
-  blockEl.style.pointerEvents = "none";
+  blockEl.style.cursor = "grabbing";
 });
 
   blocksContainer.appendChild(blockEl);
@@ -164,13 +164,15 @@ document.addEventListener("pointermove", (e) => {
   previewPlacement(e.clientX, e.clientY);
 });
 
-document.addEventListener("pointerup", () => {
-  if (!isDragging) return;
+document.addEventListener("pointerup", (e) => {
+  if (!isDragging || !activeBlock) return;
+
+  activeBlock.element.releasePointerCapture(e.pointerId);
 
   clearPreview();
   isDragging = false;
 
-  // placement logic comes next step
+  activeBlock.element.style.cursor = "grab";
 });
 
 function clearPreview() {
