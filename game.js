@@ -6,6 +6,11 @@ const grid = Array.from({ length: GRID_SIZE }, () =>
   Array(GRID_SIZE).fill(null)
 );
 
+let lastPreview = {
+  valid: false,
+  cells: []
+};
+
 const BLOCK_PRESETS = [
   // Single
   [[0, 0]],
@@ -169,11 +174,40 @@ document.addEventListener("pointerup", (e) => {
 
   activeBlock.element.releasePointerCapture(e.pointerId);
 
+  if (lastPreview.valid) {
+    placeActiveBlock();
+  }
+
   clearPreview();
   isDragging = false;
-
-  activeBlock.element.style.cursor = "grab";
 });
+
+function placeActiveBlock() {
+  const { shape, catType, faceIndex } = activeBlock;
+
+  lastPreview.cells.forEach((pos, i) => {
+    const isFace = i === faceIndex;
+
+    grid[pos.row][pos.col] = {
+      catType,
+      isFace
+    };
+
+    renderTile(pos.row, pos.col, grid[pos.row][pos.col]);
+  });
+
+  // Remove preview block
+  activeBlock.element.remove();
+  activeBlock = null;
+
+  // Reset preview state
+  lastPreview.valid = false;
+  lastPreview.cells = [];
+
+  // Spawn next block
+  spawnPreviewBlock();
+}
+
 
 function clearPreview() {
   document.querySelectorAll(".cell").forEach(cell => {
@@ -217,6 +251,9 @@ function previewPlacement(mouseX, mouseY) {
       targetCells.push({ row, col });
     }
   });
+
+  lastPreview.valid = valid;
+    lastPreview.cells = valid ? targetCells : [];
 
   targetCells.forEach(({ row, col }) => {
     const index = row * GRID_SIZE + col;
