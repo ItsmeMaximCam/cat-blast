@@ -229,19 +229,19 @@ document.addEventListener("pointermove", (e) => {
   previewPlacement(e.clientX, e.clientY);
 });
 
-document.addEventListener("pointerup", () => {
+document.addEventListener("pointerup", (e) => {
   if (!isDragging || !activeBlock) return;
 
   try {
-    activeBlock.element.releasePointerCapture(activePointerId);
+     if (activeBlock.element && typeof activeBlock.element.releasePointerCapture === "function") {
+      activeBlock.element.releasePointerCapture(activePointerId);
+    }
   } catch (_) {}
 
   const px = (e && typeof e.clientX === "number") ? e.clientX : lastPointer.x;
   const py = (e && typeof e.clientY === "number") ? e.clientY : lastPointer.y;
 
-  previewPlacement(
-
-  );
+  previewPlacement(px, py);
 
   if (lastPreview.valid) {
     placeActiveBlock();
