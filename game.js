@@ -164,6 +164,7 @@ blockEl.style.height = `${(maxY + 1) * 32}px`;
   blockEl.style.cursor = "grab";
 
   blockEl.addEventListener("pointerdown", (e) => {
+    e.preventDefault(); 
     isDragging = true;
     activePointerId = e.pointerId;
 
@@ -199,7 +200,7 @@ let dragOffset = { x: 0, y: 0 };
 
 document.addEventListener("pointermove", (e) => {
   if (!isDragging || !activeBlock) return;
-
+  e.preventDefault(); 
   activeBlock.element.style.left = e.clientX - dragOffset.x + "px";
   activeBlock.element.style.top = e.clientY - dragOffset.y + "px";
 
