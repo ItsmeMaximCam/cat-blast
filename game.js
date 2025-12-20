@@ -11,6 +11,7 @@ let lastPreview = {
   cells: []
 };
 
+const DRAG_BIAS = 6; // tweak 4–8px to taste
 let score = 0;
 let bestScore = Number(localStorage.getItem("catblast_best")) || 0;
 
@@ -42,7 +43,7 @@ const BLOCK_PRESETS = [
   [[0, 0], [1, 0], [2, 0], [0, 1]],
 ];
 
-const CAT_TYPES = ["orange", "gray"];
+const CAT_TYPES = ["orange", "gray" , "white"];
 
 function pickFaceIndex(shape) {
   // Try center-ish tile first
@@ -86,7 +87,6 @@ function renderTile(row, col, tile) {
   const index = row * GRID_SIZE + col;
   const cell = gridElement.children[index];
 
-  // Clear previous content
   cell.innerHTML = "";
 
   if (!tile) return;
@@ -94,11 +94,11 @@ function renderTile(row, col, tile) {
   const img = document.createElement("img");
 
   const basePath = "assets/cats/";
-  if (tile.isFace) {
-    img.src = `${basePath}${tile.catType}_face.png`;
-  } else {
-    img.src = `${basePath}${tile.catType}_body.png`;
-  }
+  img.src = tile.isFace
+    ? `${basePath}${tile.catType}_face.png`
+    : `${basePath}${tile.catType}_body.png`;
+
+  img.classList.add("pop"); // 👈 THIS LINE
 
   cell.appendChild(img);
 }
@@ -173,8 +173,8 @@ blockEl.style.height = `${(maxY + 1) * 32}px`;
 }
 
     const rect = blockEl.getBoundingClientRect();
-    dragOffset.x = rect.width / 2;
-    dragOffset.y = rect.height / 2;
+    dragOffset.x = rect.width / 2 - DRAG_BIAS;
+    dragOffset.y = rect.height / 2 - DRAG_BIAS;
 
     blockEl.style.position = "absolute";
     blockEl.style.zIndex = 1000;
@@ -186,7 +186,7 @@ blockEl.style.height = `${(maxY + 1) * 32}px`;
 blockEl.style.left = "auto";
 blockEl.style.top = "auto";
 
-// 🚨 GAME OVER CHECK
+// GAME OVER CHECK
 if (!canPlaceBlockAnywhere(shape)) {
   triggerGameOver();
 }
@@ -372,8 +372,14 @@ function clearCompletedLines() {
 
 const linesCleared = rowsToClear.length + colsToClear.length;
 
+
 if (linesCleared > 0) {
   score += linesCleared * 100;
+  gridElement.style.animationDuration = `${0.15 + linesCleared * 0.05}s`;
+  gridElement.classList.add("shake");
+    setTimeout(() => {
+    gridElement.classList.remove("shake");
+  }, 250);
 
   if (score > bestScore) {
     bestScore = score;
