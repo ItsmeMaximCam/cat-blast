@@ -133,31 +133,33 @@ function spawnPreviewBlock() {
     tile.appendChild(img);
     blockEl.appendChild(tile);
   });
+  
   activeBlock = {
-  shape,
-  catType,
-  faceIndex,
-  element: blockEl
-};
+    shape,
+    catType,
+    faceIndex,
+    element: blockEl
+  };
+  
+  blockEl.style.cursor = "grab";
+
+  blockEl.addEventListener("pointerdown", (e) => {
+    isDragging = true;
+    activePointerId = e.pointerId;
+
+    blockEl.setPointerCapture(activePointerId);
+
+    const rect = blockEl.getBoundingClientRect();
+    dragOffset.x = rect.width / 2;
+    dragOffset.y = rect.height / 2;
+
+    blockEl.style.position = "absolute";
+    blockEl.style.zIndex = 1000;
+    blockEl.style.cursor = "grabbing";
+  });
+
+  blocksContainer.appendChild(blockEl);
 }
-blockEl.style.cursor = "grab";
-
-blockEl.addEventListener("pointerdown", (e) => {
-  isDragging = true;
-  activePointerId = e.pointerId;
-
-  blockEl.setPointerCapture(activePointerId);
-
-  const rect = blockEl.getBoundingClientRect();
-  dragOffset.x = rect.width / 2;
-  dragOffset.y = rect.height / 2;
-
-  blockEl.style.position = "absolute";
-  blockEl.style.zIndex = 1000;
-  blockEl.style.cursor = "grabbing";
-});
-
-blocksContainer.appendChild(blockEl);
 
 let activeBlock = null;
 let isDragging = false;
