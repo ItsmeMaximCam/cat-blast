@@ -227,6 +227,12 @@ document.addEventListener("pointerup", () => {
     activeBlock.element.releasePointerCapture(activePointerId);
   } catch (_) {}
 
+    // Force a final preview check
+  previewPlacement(
+    event.clientX ?? lastX,
+    event.clientY ?? lastY
+  );
+
   if (lastPreview.valid) {
     placeActiveBlock();
   }
@@ -418,6 +424,7 @@ const linesCleared = rowsToClear.length + colsToClear.length;
 if (linesCleared > 0) {
 
   score += linesCleared * 100;
+    const points = linesCleared * 100;
   gridElement.style.animationDuration = `${0.15 + linesCleared * 0.05}s`;
   gridElement.classList.add("shake");
     setTimeout(() => {
@@ -426,7 +433,7 @@ if (linesCleared > 0) {
 
    const gridRect = gridElement.getBoundingClientRect();
     spawnFloatingScore(
-    `+${score}`,
+    `+${points}`,
     gridRect.left + gridRect.width / 2 - 20,
     gridRect.top + gridRect.height / 2);
 
