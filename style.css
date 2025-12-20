@@ -192,6 +192,20 @@ img {
   }
 }
 
+@keyframes faceSwing {
+  0%   { transform: rotate(-3deg); }
+  50%  { transform: rotate(3deg); }
+  100% { transform: rotate(-3deg); }
+}
+
+.cell img.face {
+  animation: faceSwing 3.5s ease-in-out infinite;
+  transform-origin: center bottom;
+  
+}
+
+
+
 .cell.preview-clear {
   background: #ffe066 !important;
 }

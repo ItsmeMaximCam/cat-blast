@@ -24,6 +24,19 @@ function spawnFloatingScore(text, x, y) {
   setTimeout(() => el.remove(), 800);
 }
 
+let audioUnlocked = false;
+
+function unlockAudio() {
+  if (audioUnlocked) return;
+
+  scoreSound.play().then(() => {
+    scoreSound.pause();
+    scoreSound.currentTime = 0;
+    audioUnlocked = true;
+  }).catch(() => {});
+}
+
+
 
 const scoreSound = new Audio("assets/sounds/meow.wav");
 scoreSound.volume = 0.6;
@@ -114,7 +127,13 @@ function renderTile(row, col, tile) {
     ? `${basePath}${tile.catType}_face.png`
     : `${basePath}${tile.catType}_body.png`;
 
-  img.classList.add("pop"); // 👈 THIS LINE
+if (tile.isFace) {
+  img.classList.add("face");
+  img.style.animationDelay = `${Math.random() * 2}s`; //desync the wiggle
+}
+
+
+  img.classList.add("pop"); 
 
   cell.appendChild(img);
 }
@@ -180,6 +199,7 @@ blockEl.style.height = `${(maxY + 1) * 32}px`;
   blockEl.style.cursor = "grab";
 
   blockEl.addEventListener("pointerdown", (e) => {
+    unlockAudio();
     e.preventDefault(); 
     isDragging = true;
     activePointerId = e.pointerId;
@@ -435,6 +455,10 @@ const linesCleared = rowsToClear.length + colsToClear.length;
 
 
 if (linesCleared > 0) {
+
+scoreSound.currentTime = 0; // rewind so rapid clears still play
+scoreSound.playbackRate = 0.95 + Math.random() * 0.1;
+scoreSound.play().catch(() => {});
 
   score += linesCleared * 100;
     const points = linesCleared * 100;
