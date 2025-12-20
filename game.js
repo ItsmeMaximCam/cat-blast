@@ -70,6 +70,20 @@ const BLOCK_PRESETS = [
   // L shapes
   [[0, 0], [1, 0], [0, 1]],
   [[0, 0], [1, 0], [2, 0], [0, 1]],
+
+  // Squares
+  [[0, 0], [1, 0], [0, 1], [1, 1]],
+
+    // T shape
+    [[0, 0], [1, 0], [2, 0], [1, 1]],
+    
+    //Diagonal line
+    [[0, 0], [1, 1], [2, 2]],
+    [[0, 2], [1, 1], [2, 0]],
+    
+    // S shape
+    [[1, 0], [2, 0], [0, 1], [1, 1]],
+
 ];
 
 const CAT_TYPES = ["orange", "gray" , "white"];
@@ -127,10 +141,8 @@ function renderTile(row, col, tile) {
     ? `${basePath}${tile.catType}_face.png`
     : `${basePath}${tile.catType}_body.png`;
 
-if (tile.isFace) {
-  img.classList.add("face");
   img.style.animationDelay = `${Math.random() * 2}s`; //desync the wiggle
-}
+
 
 
   img.classList.add("pop"); 
@@ -139,12 +151,6 @@ if (tile.isFace) {
 }
 
 
-// TEMP TEST TILE
-//grid[3][3] = { catType: "orange", isFace: true };
-//grid[3][4] = { catType: "orange", isFace: false };
-
-//renderTile(3, 3, grid[3][3]);
-//renderTile(3, 4, grid[3][4]);
 
 const blocksContainer = document.getElementById("blocks");
 
