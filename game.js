@@ -147,7 +147,9 @@ function spawnPreviewBlock() {
     isDragging = true;
     activePointerId = e.pointerId;
 
-    blockEl.setPointerCapture(activePointerId);
+ if (blockEl.hasPointerCapture(activePointerId) === false) {
+  blockEl.setPointerCapture(activePointerId);
+}
 
     const rect = blockEl.getBoundingClientRect();
     dragOffset.x = rect.width / 2;
@@ -159,6 +161,9 @@ function spawnPreviewBlock() {
   });
 
   blocksContainer.appendChild(blockEl);
+  blockEl.style.position = "relative";
+blockEl.style.left = "auto";
+blockEl.style.top = "auto";
 }
 
 let activeBlock = null;
