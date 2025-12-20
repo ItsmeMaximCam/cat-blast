@@ -100,7 +100,7 @@ h1 {
   position: absolute;
   inset: 0;
   background: rgba(0,0,0,0.75);
-  display: none !important;
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -116,6 +116,11 @@ h1 {
   font-size: 16px;
   cursor: pointer;
 }
+
+[hidden] {
+  display: none !important;
+}
+
 
 
 
