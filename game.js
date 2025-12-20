@@ -11,6 +11,10 @@ let lastPreview = {
   cells: []
 };
 
+let score = 0;
+
+
+
 let activePointerId = null;
 
 const BLOCK_PRESETS = [
@@ -231,6 +235,7 @@ function placeActiveBlock() {
     };
 
     renderTile(pos.row, pos.col, grid[pos.row][pos.col]);
+    clearCompletedLines();
   });
 
   // Remove preview block
@@ -298,6 +303,61 @@ function previewPlacement(mouseX, mouseY) {
     cell.classList.add(valid ? "preview-valid" : "preview-invalid");
   });
 }
+
+function clearCompletedLines() {
+  const rowsToClear = [];
+  const colsToClear = [];
+
+  // Check rows
+  for (let r = 0; r < GRID_SIZE; r++) {
+    let full = true;
+    for (let c = 0; c < GRID_SIZE; c++) {
+      if (grid[r][c] === null) {
+        full = false;
+        break;
+      }
+    }
+    if (full) rowsToClear.push(r);
+  }
+
+  // Check columns
+  for (let c = 0; c < GRID_SIZE; c++) {
+    let full = true;
+    for (let r = 0; r < GRID_SIZE; r++) {
+      if (grid[r][c] === null) {
+        full = false;
+        break;
+      }
+    }
+    if (full) colsToClear.push(c);
+  }
+
+  // Nothing to clear
+  if (rowsToClear.length === 0 && colsToClear.length === 0) return;
+
+  // Clear rows
+  rowsToClear.forEach(r => {
+    for (let c = 0; c < GRID_SIZE; c++) {
+      grid[r][c] = null;
+      renderTile(r, c, null);
+    }
+  });
+
+  // Clear columns
+  colsToClear.forEach(c => {
+    for (let r = 0; r < GRID_SIZE; r++) {
+      grid[r][c] = null;
+      renderTile(r, c, null);
+    }
+  });
+
+  // Simple scoring
+  const linesCleared = rowsToClear.length + colsToClear.length;
+  score += linesCleared * 100;
+
+  console.log("Cleared lines:", linesCleared, "Score:", score);
+}
+
 
 
 // TEMP: spawn one block on load
