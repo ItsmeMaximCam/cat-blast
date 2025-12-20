@@ -24,6 +24,9 @@ function spawnFloatingScore(text, x, y) {
   setTimeout(() => el.remove(), 800);
 }
 
+
+const scoreSound = new Audio("assets/sounds/meow.wav");
+scoreSound.volume = 0.6;
 const DRAG_BIAS = 10; // tweak 4–8px to taste
 let score = 0;
 let bestScore = Number(localStorage.getItem("catblast_best")) || 0;
