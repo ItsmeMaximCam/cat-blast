@@ -24,7 +24,7 @@ function spawnFloatingScore(text, x, y) {
   setTimeout(() => el.remove(), 800);
 }
 
-const DRAG_BIAS = 6; // tweak 4–8px to taste
+const DRAG_BIAS = 10; // tweak 4–8px to taste
 let score = 0;
 let bestScore = Number(localStorage.getItem("catblast_best")) || 0;
 
@@ -181,6 +181,10 @@ blockEl.style.height = `${(maxY + 1) * 32}px`;
     isDragging = true;
     activePointerId = e.pointerId;
 
+    // store initial pointer pos
+    lastPointer.x = e.clientX;
+    lastPointer.y = e.clientY;
+
  if (blockEl.hasPointerCapture(activePointerId) === false) {
   blockEl.setPointerCapture(activePointerId);
 }
@@ -209,11 +213,16 @@ if (!canPlaceBlockAnywhere(shape)) {
 let activeBlock = null;
 let isDragging = false;
 let dragOffset = { x: 0, y: 0 };
-
+let lastPointer = { x: 0, y: 0 };
 
 document.addEventListener("pointermove", (e) => {
   if (!isDragging || !activeBlock) return;
   e.preventDefault(); 
+
+  // update last known pointer coords
+  lastPointer.x = e.clientX;
+  lastPointer.y = e.clientY;
+
   activeBlock.element.style.left = e.clientX - dragOffset.x + "px";
   activeBlock.element.style.top = e.clientY - dragOffset.y + "px";
 
@@ -227,10 +236,11 @@ document.addEventListener("pointerup", () => {
     activeBlock.element.releasePointerCapture(activePointerId);
   } catch (_) {}
 
-    // Force a final preview check
+  const px = (e && typeof e.clientX === "number") ? e.clientX : lastPointer.x;
+  const py = (e && typeof e.clientY === "number") ? e.clientY : lastPointer.y;
+
   previewPlacement(
-    event.clientX ?? lastX,
-    event.clientY ?? lastY
+
   );
 
   if (lastPreview.valid) {
