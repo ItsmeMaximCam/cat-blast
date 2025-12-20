@@ -12,6 +12,16 @@ let lastPreview = {
 };
 
 let score = 0;
+let bestScore = Number(localStorage.getItem("catblast_best")) || 0;
+
+const scoreEl = document.getElementById("score");
+const bestScoreEl = document.getElementById("best-score");
+
+function updateScoreUI() {
+  scoreEl.textContent = `Score: ${score}`;
+  bestScoreEl.textContent = `Best ❤️: ${bestScore}`;
+}
+updateScoreUI();
 
 
 
@@ -174,6 +184,12 @@ blockEl.style.height = `${(maxY + 1) * 32}px`;
   blockEl.style.position = "relative";
 blockEl.style.left = "auto";
 blockEl.style.top = "auto";
+
+// 🚨 GAME OVER CHECK
+if (!canPlaceBlockAnywhere(shape)) {
+  triggerGameOver();
+}
+
 }
 
 let activeBlock = null;
@@ -353,12 +369,73 @@ function clearCompletedLines() {
     }
   });
 
-  // Simple scoring
-  const linesCleared = rowsToClear.length + colsToClear.length;
+const linesCleared = rowsToClear.length + colsToClear.length;
+
+if (linesCleared > 0) {
   score += linesCleared * 100;
 
-  console.log("Cleared lines:", linesCleared, "Score:", score);
+  if (score > bestScore) {
+    bestScore = score;
+    localStorage.setItem("catblast_best", bestScore);
+  }
+
+  updateScoreUI();
 }
+}
+
+function canPlaceBlockAnywhere(shape) {
+  for (let row = 0; row < GRID_SIZE; row++) {
+    for (let col = 0; col < GRID_SIZE; col++) {
+
+      let valid = true;
+
+      for (const [dx, dy] of shape) {
+        const r = row + dy;
+        const c = col + dx;
+
+        if (
+          r < 0 ||
+          r >= GRID_SIZE ||
+          c < 0 ||
+          c >= GRID_SIZE ||
+          grid[r][c] !== null
+        ) {
+          valid = false;
+          break;
+        }
+      }
+
+      if (valid) return true;
+    }
+  }
+
+  return false;
+}
+
+const gameOverEl = document.getElementById("game-over");
+const restartBtn = document.getElementById("restart");
+
+function triggerGameOver() {
+  gameOverEl.hidden = false;
+}
+
+restartBtn.addEventListener("click", () => {
+  // Clear grid
+  for (let r = 0; r < GRID_SIZE; r++) {
+    for (let c = 0; c < GRID_SIZE; c++) {
+      grid[r][c] = null;
+      renderTile(r, c, null);
+    }
+  }
+
+  score = 0;
+  updateScoreUI();
+
+  gameOverEl.hidden = true;
+  spawnPreviewBlock();
+});
+
+
 
 
 

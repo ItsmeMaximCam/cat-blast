@@ -80,6 +80,43 @@ h1 {
   background: #f7c5c5;
 }
 
+#hud {
+  display: flex;
+  justify-content: space-between;
+  width: 260px;
+  margin-bottom: 10px;
+  font-family: sans-serif;
+  font-weight: bold;
+}
+
+#score, #best-score {
+  background: #fff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#game-over {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-family: sans-serif;
+}
+
+#game-over button {
+  margin-top: 10px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
 
 
 
