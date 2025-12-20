@@ -117,6 +117,10 @@ function spawnPreviewBlock() {
   blockEl.classList.add("block");
   blockEl.style.gridTemplateColumns = `repeat(${maxX + 1}, 32px)`;
   blockEl.style.gridTemplateRows = `repeat(${maxY + 1}, 32px)`;
+  blockEl.style.display = "grid";
+blockEl.style.width = `${(maxX + 1) * 32}px`;
+blockEl.style.height = `${(maxY + 1) * 32}px`;
+
 
   shape.forEach((pos, i) => {
     const tile = document.createElement("div");
@@ -132,6 +136,8 @@ function spawnPreviewBlock() {
 
     tile.appendChild(img);
     blockEl.appendChild(tile);
+
+    blockEl.style.background = "rgba(255,0,0,0.2)";
   });
   
   activeBlock = {
