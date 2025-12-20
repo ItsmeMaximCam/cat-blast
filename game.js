@@ -139,6 +139,7 @@ function spawnPreviewBlock() {
   faceIndex,
   element: blockEl
 };
+}
 blockEl.style.cursor = "grab";
 
 blockEl.addEventListener("pointerdown", (e) => {
@@ -156,10 +157,7 @@ blockEl.addEventListener("pointerdown", (e) => {
   blockEl.style.cursor = "grabbing";
 });
 
-
-
-  blocksContainer.appendChild(blockEl);
-}
+blocksContainer.appendChild(blockEl);
 
 let activeBlock = null;
 let isDragging = false;
@@ -175,11 +173,11 @@ document.addEventListener("pointermove", (e) => {
   previewPlacement(e.clientX, e.clientY);
 });
 
-blockEl.addEventListener("pointerup", () => {
-  if (!isDragging) return;
+document.addEventListener("pointerup", () => {
+  if (!isDragging || !activeBlock) return;
 
   try {
-    blockEl.releasePointerCapture(activePointerId);
+    activeBlock.element.releasePointerCapture(activePointerId);
   } catch (_) {}
 
   if (lastPreview.valid) {
@@ -190,7 +188,9 @@ blockEl.addEventListener("pointerup", () => {
   isDragging = false;
   activePointerId = null;
 
-  blockEl.style.cursor = "grab";
+  if (activeBlock && activeBlock.element) {
+    activeBlock.element.style.cursor = "grab";
+  }
 });
 
 
@@ -198,13 +198,19 @@ blockEl.addEventListener("pointerup", () => {
 function placeActiveBlock() {
   const { shape, catType, faceIndex } = activeBlock;
 
-  lastPreview.cells.forEach((pos) => {
-  const shapeIndex = activeBlock.shape.findIndex(
-    ([dx, dy]) =>
-      pos.row === baseRow + dy && pos.col === baseCol + dx
-  );
+  // Get the base position from the first preview cell
+  const firstCell = lastPreview.cells[0];
+  const firstShapeOffset = shape[0];
+  const baseRow = firstCell.row - firstShapeOffset[1];
+  const baseCol = firstCell.col - firstShapeOffset[0];
 
-  const isFace = shapeIndex === faceIndex;
+  lastPreview.cells.forEach((pos) => {
+    const shapeIndex = activeBlock.shape.findIndex(
+      ([dx, dy]) =>
+        pos.row === baseRow + dy && pos.col === baseCol + dx
+    );
+
+    const isFace = shapeIndex === faceIndex;
 
     grid[pos.row][pos.col] = {
       catType,
