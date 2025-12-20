@@ -100,7 +100,7 @@ h1 {
   position: absolute;
   inset: 0;
   background: rgba(0,0,0,0.75);
-  display: flex;
+  display: none !important;
   flex-direction: column;
   justify-content: center;
   align-items: center;
