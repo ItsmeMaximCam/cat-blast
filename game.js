@@ -11,6 +11,19 @@ let lastPreview = {
   cells: []
 };
 
+function spawnFloatingScore(text, x, y) {
+  const el = document.createElement("div");
+  el.className = "floating-score";
+  el.textContent = text;
+
+  el.style.left = `${x}px`;
+  el.style.top = `${y}px`;
+
+  document.body.appendChild(el);
+
+  setTimeout(() => el.remove(), 800);
+}
+
 const DRAG_BIAS = 6; // tweak 4–8px to taste
 let score = 0;
 let bestScore = Number(localStorage.getItem("catblast_best")) || 0;
@@ -272,7 +285,11 @@ function placeActiveBlock() {
 
 function clearPreview() {
   document.querySelectorAll(".cell").forEach(cell => {
-    cell.classList.remove("preview-valid", "preview-invalid");
+    cell.classList.remove(
+      "preview-valid",
+      "preview-invalid",
+      "preview-clear"
+    );
   });
 }
 
@@ -313,8 +330,33 @@ function previewPlacement(mouseX, mouseY) {
     }
   });
 
+  // Only simulate clears if placement is valid
+  if (valid) {
+    const simulated = grid.map(row => row.slice());
+
+    targetCells.forEach(({ row, col }) => {
+      simulated[row][col] = {};
+    });
+
+    const clears = getPotentialClears(simulated);
+
+    clears.rows.forEach(r => {
+      for (let c = 0; c < GRID_SIZE; c++) {
+        const index = r * GRID_SIZE + c;
+        gridElement.children[index].classList.add("preview-clear");
+      }
+    });
+
+    clears.cols.forEach(c => {
+      for (let r = 0; r < GRID_SIZE; r++) {
+        const index = r * GRID_SIZE + c;
+        gridElement.children[index].classList.add("preview-clear");
+      }
+    });
+  }
+
   lastPreview.valid = valid;
-    lastPreview.cells = valid ? targetCells : [];
+  lastPreview.cells = valid ? targetCells : [];
 
   targetCells.forEach(({ row, col }) => {
     const index = row * GRID_SIZE + col;
@@ -374,12 +416,19 @@ const linesCleared = rowsToClear.length + colsToClear.length;
 
 
 if (linesCleared > 0) {
+
   score += linesCleared * 100;
   gridElement.style.animationDuration = `${0.15 + linesCleared * 0.05}s`;
   gridElement.classList.add("shake");
     setTimeout(() => {
     gridElement.classList.remove("shake");
   }, 250);
+
+   const gridRect = gridElement.getBoundingClientRect();
+    spawnFloatingScore(
+    `+${points}`,
+    gridRect.left + gridRect.width / 2 - 20,
+    gridRect.top + gridRect.height / 2);
 
   if (score > bestScore) {
     bestScore = score;
@@ -442,6 +491,29 @@ restartBtn.addEventListener("click", () => {
   spawnPreviewBlock();
 });
 
+function getPotentialClears(simulatedGrid) {
+  const rows = [];
+  const cols = [];
+
+  for (let r = 0; r < GRID_SIZE; r++) {
+    if (simulatedGrid[r].every(cell => cell !== null)) {
+      rows.push(r);
+    }
+  }
+
+  for (let c = 0; c < GRID_SIZE; c++) {
+    let full = true;
+    for (let r = 0; r < GRID_SIZE; r++) {
+      if (simulatedGrid[r][c] === null) {
+        full = false;
+        break;
+      }
+    }
+    if (full) cols.push(c);
+  }
+
+  return { rows, cols };
+}
 
 
 
