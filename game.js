@@ -435,6 +435,14 @@ if (linesCleared > 0) {
 
   score += linesCleared * 100;
     const points = linesCleared * 100;
+
+rowsToClear.forEach(r => {
+  for (let c = 0; c < GRID_SIZE; c++) {
+    const index = r * GRID_SIZE + c;
+    gridElement.children[index].classList.add("clearing");
+  }
+});
+
   gridElement.style.animationDuration = `${0.15 + linesCleared * 0.05}s`;
   gridElement.classList.add("shake");
     setTimeout(() => {

@@ -196,3 +196,7 @@ img {
   background: #ffe066 !important;
 }
 
+.cell.clearing {
+  animation: pop 0.15s ease-in-out;
+}
+
