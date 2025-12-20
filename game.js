@@ -235,8 +235,10 @@ function placeActiveBlock() {
     };
 
     renderTile(pos.row, pos.col, grid[pos.row][pos.col]);
-    clearCompletedLines();
+
   });
+
+      clearCompletedLines();
 
   // Remove preview block
   activeBlock.element.remove();
