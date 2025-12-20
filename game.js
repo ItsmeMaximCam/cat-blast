@@ -426,7 +426,7 @@ if (linesCleared > 0) {
 
    const gridRect = gridElement.getBoundingClientRect();
     spawnFloatingScore(
-    `+${points}`,
+    `+${score}`,
     gridRect.left + gridRect.width / 2 - 20,
     gridRect.top + gridRect.height / 2);
 
